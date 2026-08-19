@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage FAQs - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Manage FAQs</h1>
+        <nav>
+            <a href="index.html">Overview</a>
+            <a href="campaigns.html">Campaigns</a>
+            <a href="blood.html">Blood Donations</a>
+            <a href="volunteers.html">Volunteers</a>
+            <a href="news.html">News</a>
+            <a href="faq.html" class="active">FAQs</a>
+            <a href="messages.html">Messages</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-content">
+        <section class="add-section">
+            <h3>Add New FAQ</h3>
+            <form id="addFaqForm">
+                <input type="text" id="question" placeholder="Question" required>
+                <textarea id="answer" placeholder="Answer" required></textarea>
+                <button type="submit">Save FAQ</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <h3>Current FAQs</h3>
+            <table border="1" id="faqTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        async function loadFaqs() {
+            const res = await fetch('../backend/admin/api.php?action=get_faqs');
+            const faqs = await res.json();
+            const tbody = document.querySelector('#faqTable tbody');
+            tbody.innerHTML = '';
+
+            if (Array.isArray(faqs)) {
+                faqs.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.question}</td>
+                            <td>${item.answer}</td>
+                            <td><button onclick="deleteFaq(${item.id})">Delete</button></td>
+                        </tr>`;
+                });
+            }
+        }
+
+        document.getElementById('addFaqForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('question', document.getElementById('question').value);
+            formData.append('answer', document.getElementById('answer').value);
+
+            const res = await fetch('../backend/admin/api.php?action=add_faq', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                alert('FAQ added successfully!');
+                document.getElementById('addFaqForm').reset();
+                loadFaqs();
+            } else {
+                alert('Error adding FAQ.');
+            }
+        });
+
+        async function deleteFaq(id) {
+            if (!confirm("Are you sure you want to delete this FAQ?")) return;
+            const formData = new FormData();
+            formData.append('id', id);
+
+            const res = await fetch('../backend/admin/api.php?action=delete_faq', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                loadFaqs();
+            } else {
+                alert('Error deleting FAQ.');
+            }
+        }
+
+        async function logout() {
+            await fetch('../backend/admin/api.php?action=logout');
+            window.location.href = 'login.html';
+        }
+
+        loadFaqs();
+    </script>
+</body>
+</html>

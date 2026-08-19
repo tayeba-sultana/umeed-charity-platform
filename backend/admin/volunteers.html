@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Volunteers - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Manage Volunteers</h1>
+        <nav>
+            <a href="index.html">Overview</a>
+            <a href="campaigns.html">Campaigns</a>
+            <a href="blood.html">Blood Donations</a>
+            <a href="volunteers.html" class="active">Volunteers</a>
+            <a href="news.html">News</a>
+            <a href="faq.html">FAQs</a>
+            <a href="messages.html">Messages</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-content">
+        <h3>Volunteer Applications</h3>
+        <table border="1" id="volunteersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Skills / Interest</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+
+    <script>
+        async function loadVolunteers() {
+            const res = await fetch('../backend/admin/api.php?action=get_volunteers');
+            const volunteers = await res.json();
+            const tbody = document.querySelector('#volunteersTable tbody');
+            tbody.innerHTML = '';
+
+            if (Array.isArray(volunteers)) {
+                volunteers.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.name || 'N/A'}</td>
+                            <td>${item.email || 'N/A'}</td>
+                            <td>${item.phone || 'N/A'}</td>
+                            <td>${item.skills || item.message || 'N/A'}</td>
+                        </tr>`;
+                });
+            }
+        }
+
+        async function logout() {
+            await fetch('../backend/admin/api.php?action=logout');
+            window.location.href = 'login.html';
+        }
+
+        loadVolunteers();
+    </script>
+</body>
+</html>

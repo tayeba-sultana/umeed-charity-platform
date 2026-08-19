@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blood Donations - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Manage Blood Donations</h1>
+        <nav>
+            <a href="index.html">Overview</a>
+            <a href="campaigns.html">Campaigns</a>
+            <a href="blood.html" class="active">Blood Donations</a>
+            <a href="volunteers.html">Volunteers</a>
+            <a href="news.html">News</a>
+            <a href="faq.html">FAQs</a>
+            <a href="messages.html">Messages</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-content">
+        <h3>Blood Donation Records</h3>
+        <table border="1" id="bloodTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Donor/Requester Name</th>
+                    <th>Blood Group</th>
+                    <th>Phone</th>
+                    <th>City/Location</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+
+    <script>
+        async function loadBloodDonations() {
+            const res = await fetch('../backend/admin/api.php?action=get_blood_donations');
+            const data = await res.json();
+            const tbody = document.querySelector('#bloodTable tbody');
+            tbody.innerHTML = '';
+
+            if (Array.isArray(data)) {
+                data.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.name || item.donor_name || 'N/A'}</td>
+                            <td>${item.blood_group || 'N/A'}</td>
+                            <td>${item.phone || 'N/A'}</td>
+                            <td>${item.location || item.city || 'N/A'}</td>
+                        </tr>`;
+                });
+            }
+        }
+
+        async function logout() {
+            await fetch('../backend/admin/api.php?action=logout');
+            window.location.href = 'login.html';
+        }
+
+        loadBloodDonations();
+    </script>
+</body>
+</html>

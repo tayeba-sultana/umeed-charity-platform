@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Campaigns - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Manage Campaigns</h1>
+        <nav>
+            <a href="index.html">Overview</a>
+            <a href="campaigns.html" class="active">Campaigns</a>
+            <a href="blood.html">Blood Donations</a>
+            <a href="volunteers.html">Volunteers</a>
+            <a href="news.html">News</a>
+            <a href="faq.html">FAQs</a>
+            <a href="messages.html">Messages</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-content">
+        <section class="add-section">
+            <h3>Add New Campaign</h3>
+            <form id="addCampaignForm">
+                <input type="text" id="title" placeholder="Campaign Title" required>
+                <textarea id="description" placeholder="Campaign Description" required></textarea>
+                <input type="number" step="0.01" id="goal_amount" placeholder="Goal Amount ($)" required>
+                <button type="submit">Create Campaign</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <h3>Existing Campaigns</h3>
+            <table border="1" id="campaignsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Goal Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        async function loadCampaigns() {
+            const res = await fetch('../backend/admin/api.php?action=get_campaigns');
+            const campaigns = await res.json();
+            const tbody = document.querySelector('#campaignsTable tbody');
+            tbody.innerHTML = '';
+
+            if (Array.isArray(campaigns)) {
+                campaigns.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.title}</td>
+                            <td>${item.description}</td>
+                            <td>$${item.goal_amount}</td>
+                        </tr>`;
+                });
+            }
+        }
+
+        document.getElementById('addCampaignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('goal_amount', document.getElementById('goal_amount').value);
+
+            const res = await fetch('../backend/admin/api.php?action=add_campaign', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                alert('Campaign added successfully!');
+                document.getElementById('addCampaignForm').reset();
+                loadCampaigns();
+            } else {
+                alert('Error adding campaign.');
+            }
+        });
+
+        async function logout() {
+            await fetch('../backend/admin/api.php?action=logout');
+            window.location.href = 'login.html';
+        }
+
+        loadCampaigns();
+    </script>
+</body>
+</html>

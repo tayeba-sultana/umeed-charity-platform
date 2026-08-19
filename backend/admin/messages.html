@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Messages - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Manage Contact Messages</h1>
+        <nav>
+            <a href="index.html">Overview</a>
+            <a href="campaigns.html">Campaigns</a>
+            <a href="blood.html">Blood Donations</a>
+            <a href="volunteers.html">Volunteers</a>
+            <a href="news.html">News</a>
+            <a href="faq.html">FAQs</a>
+            <a href="messages.html" class="active">Messages</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-content">
+        <h3>User Inquiries & Feedback</h3>
+        <table border="1" id="messagesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
+
+    <script>
+        async function loadMessages() {
+            const res = await fetch('../backend/admin/api.php?action=get_messages');
+            const messages = await res.json();
+            const tbody = document.querySelector('#messagesTable tbody');
+            tbody.innerHTML = '';
+
+            if (Array.isArray(messages)) {
+                messages.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.name || 'N/A'}</td>
+                            <td>${item.email || 'N/A'}</td>
+                            <td>${item.subject || 'N/A'}</td>
+                            <td>${item.message || 'N/A'}</td>
+                        </tr>`;
+                });
+            }
+        }
+
+        async function logout() {
+            await fetch('../backend/admin/api.php?action=logout');
+            window.location.href = 'login.html';
+        }
+
+        loadMessages();
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Umeed</title>
+  <!-- Fixed CSS path: go up 2 directories -->
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div class="container" style="max-width: 420px; margin: 80px auto;">
+    <div class="form-card">
+      <div id="alert" hidden></div>
+      <h2>Admin Portal Access</h2>
+      <p class="helper-text">Sign in with administrator credentials</p>
+      
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label>Username / Email</label>
+          <input type="text" id="username" name="username" required placeholder="admin@umeed.org">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login to Dashboard</button>
+      </form>
+      
+      <p style="margin-top: 18px;">
+        <a href="../../index.html">← Back to website</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Pointing to backend/admin/api.php or backend/api.php
+        // If api.php is in backend/admin/api.php:
+        const response = await fetch('../api.php?action=login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        // Fallback check if api.php is in backend/api.php instead:
+        // const response = await fetch('../api.php?action=login', ...);
+
+        const data = await response.json();
+
+        if (data.status === 'success' || data.success === true) {
+          window.location.href = 'index.html'; // Go to admin dashboard
+        } else {
+          alert(data.message || 'Invalid credentials');
+        }
+      } catch (err) {
+        alert('Failed to connect to backend.');
+      }
+    });
+  </script> -->
+  <!-- <script>
+  document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    try {
+      // Adjust path if needed ('api.php?action=login' or '../api.php?action=login')
+      const response = await fetch('api.php?action=login', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json().catch(() => ({ success: false, message: 'Invalid response from server' }));
+
+      if (response.ok && (data.status === 'success' || data.success === true)) {
+        window.location.href = 'index.html'; // Go to admin dashboard
+      } else {
+        alert(data.message || 'Invalid username or password');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to connect to backend.');
+    }
+  });
+</script> -->
+<script>
+  document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    try {
+      // Points up one level from 'backend/admin/' to 'backend/api.php'
+      const response = await fetch('api.php?action=login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const rawText = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseErr) {
+        // If PHP throws HTML or an error, show it clearly in the popup
+        alert("Backend returned an unexpected response:\n\n" + rawText.substring(0, 300));
+        return;
+      }
+
+      if (data.status === 'success' || data.success === true) {
+        window.location.href = 'index.html'; // Redirect to admin dashboard
+      } else {
+        alert(data.message || 'Invalid username or password');
+      }
+    } catch (err) {
+      alert('Failed to connect to backend: ' + err.message);
+    }
+  });
+</script>
+</body>
+</html>
