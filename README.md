@@ -1,151 +1,121 @@
-# Umeed Charity Platform — Complete XAMPP Project
+Umeed Platform — Complete XAMPP Project
+This repository contains the complete frontend, backend, and database setup for the Umeed Platform—a digital web application designed to connect donors, volunteers, and emergency blood requesters in real time.
 
-This package contains the complete Umeed frontend/backend project:
+Technical Stack
+Frontend: Standard HTML5, CSS3, JavaScript (Vanilla ES6)
 
-- Frontend: HTML + CSS + JavaScript
-- Backend: PHP 8+ using mysqli
-- Database: your XAMPP SQL database managed through phpMyAdmin
-- Database name: `charity_platform`
-- No MySQL Workbench is required.
-- The frontend does not use React, Vue, Angular, or another frontend framework.
+Backend: PHP 8+ (utilizing procedural/mysqli paradigm with prepared statements)
 
-## IMPORTANT FOR YOUR EXISTING DATABASE
+Database: MySQL / MariaDB managed via phpMyAdmin
 
-You told me that you already have a database named `charity_platform` in XAMPP. **Do not delete it and do not import the SQL file unless your existing tables are missing.**
+Server: Apache (XAMPP environment)
 
-The PHP backend is already configured for:
+Database Configuration
+The PHP API endpoint relies on the following default local database settings:
 
-```text
-host: 127.0.0.1
-username: root
-password: empty
-database: charity_platform
-```
+Plaintext
+Host:     127.0.0.1 (or localhost)
+User:     root
+Password: (empty)
+Database: charity_platform
 
-## 1. Put the project in htdocs
 
-Extract this folder so the final location is equivalent to:
+Setup & Local Installation
+1. Project Deployment in Apache Root
+Extract or move the project repository into your local XAMPP htdocs directory:
 
-```text
-...\htdocs\umeed-charity-platform\index.html
-...\htdocs\umeed-charity-platform\backend\api.php
-```
+Plaintext
+C:\xampp\htdocs\umeed-charity-platform\
+(Ensure index.html is located directly at ...\htdocs\umeed-charity-platform\index.html without duplicate nesting).
 
-For your current setup, your path is:
+2. Start Services
+Launch the XAMPP Control Panel and start both:
 
-```text
-C:\Users\FC\Desktop\folder\htdocs\umeed-charity-platform
-```
+Apache
 
-Do not place the folder inside another `umeed-charity-platform` folder.
+MySQL
 
-## 2. Start XAMPP
+3. Database Schema Setup (If Needed)
 
-Start:
+Target File: database/charity_platform.sql
 
-1. Apache
-2. MySQL
+Core Tables:
 
-## 3. Test the PHP API first
+users
 
-Open this exact URL in Chrome:
+campaigns
 
-```text
+donations
+
+blood_donors
+
+volunteers
+
+news
+
+contact_messages
+
+4. Verify API Connection
+Before browsing the web UI, ensure the database connection and PHP environment are fully operational. Open web browser to:
+
+Plaintext
 http://localhost/umeed-charity-platform/backend/api.php?action=session
-```
+Expected JSON Output:
 
-You should see JSON similar to:
-
-```json
+JSON
 {"success":true,"message":"OK","data":{"logged_in":false,"user":null}}
-```
+(If PHP warnings appear above the JSON, check your MySQL connection settings in backend/api.php).
 
-There should be no PHP warning above the JSON.
+5. Access the Platform
+User Portal:
 
-## 4. Open the website
-
-```text
 http://localhost/umeed-charity-platform/index.html
-```
 
-Do not open the HTML files with `file:///...`. Apache must serve them.
+(Always load pages through http://localhost/, do not open HTML files directly via file://).
 
-## 5. Database
+Admin Control Panel:
 
-The included file is:
-
-```text
-database/charity_platform.sql
-```
-
-It is provided as a backup/schema reference. Since you already have `charity_platform`, leave your existing database alone unless your tables do not match the project.
-
-The expected tables are:
-
-- users
-- campaigns
-- donations
-- blood_donors
-- volunteers
-- news
-- contact_messages
-
-## 6. Admin
-
-Open:
-
-```text
 http://localhost/umeed-charity-platform/admin/login.html
-```
 
-Demo admin account from the supplied SQL:
+Default Credentials (from SQL schema):
 
-```text
 Email: admin@umeed.org
+
 Password: admin123
-```
 
-If your existing database does not contain that account, use your existing admin account or create one in phpMyAdmin.
-
-## 7. Project structure
-
-```text
+Directory Structure
+Plaintext
 umeed-charity-platform/
-├── index.html
-├── campaigns.html
-├── campaign-details.html
-├── donate.html
-├── login.html
-├── register.html
-├── dashboard.html
-├── receipt.html
-├── blood-donation.html
-├── volunteer.html
-├── news.html
-├── faq.html
-├── contact.html
+├── index.html               # Homepage
+├── campaigns.html           # Active campaigns overview
+├── campaign-details.html    # Detailed view per campaign
+├── donate.html              # Donation form & processing
+├── login.html               # User authentication
+├── register.html            # User signup
+├── dashboard.html          # User profile & donation history
+├── receipt.html             # Donation transaction receipt
+├── blood-donation.html      # Emergency blood request & donor matching
+├── volunteer.html          # Volunteer recruitment & tasks
+├── news.html               # Community news & updates
+├── faq.html                # Frequently Asked Questions
+├── contact.html            # Contact & inquiry form
 ├── css/
-│   └── style.css
+│   └── style.css            # Platform styling
 ├── js/
-│   └── script.js
+│   └── script.js           # Frontend interactive & API handlers
 ├── images/
-│   └── campaigns/
+│   └── campaigns/           # Stored uploaded campaign banners
 ├── backend/
-│   └── api.php
-├── admin/
+│   └── api.php              # RESTful PHP backend endpoints
+├── admin/                  # Administrative panel views
 ├── database/
-│   └── charity_platform.sql
+│   └── charity_platform.sql # Database backup/schema script
 └── README.md
-```
+Troubleshooting
+"Invalid server response" on Frontend:
 
-## 8. If you see “Invalid server response”
+This usually happens when backend/api.php returns a PHP error string mixed with JSON. Navigate directly to http://localhost/umeed-charity-platform/backend/api.php?action=session in the browser to inspect the raw error trace.
 
-First open:
+Variable Mismatch in Connection:
 
-```text
-http://localhost/umeed-charity-platform/backend/api.php?action=session
-```
-
-If that page contains a PHP warning, fix the PHP/API issue before testing the frontend. The frontend expects valid JSON from the API.
-
-The database connection in `backend/api.php` uses `$password`, not `$pass`.
+Verify that the MySQL connection parameter variable in backend/api.php consistently references $password (and not $pass).
